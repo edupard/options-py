@@ -11,6 +11,13 @@ class Config(object):
         self.GRID_PX_STEP = 0.07
         self.PROFILE_STEPS = 10
 
+        #hedger params
+        self.NUM_BUY_STOPS = 5
+        self.BUY_STOP_PX_STEP = 0.2
+        self.NUM_SELL_STOPS = 5
+        self.BUY_STOP_PX_STEP = 0.2
+
+
 _config = Config()
 
 def get_config():

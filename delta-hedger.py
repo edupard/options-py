@@ -1,14 +1,11 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib
 
 import utils
 import config
 
 utils.parse_input()
 
-target_orders = []
 target_code = []
 target_qty = []
 target_px = []
@@ -27,28 +24,33 @@ for fut_code in fut_codes:
     # get undelying px
     under_px =last_bar.Close
 
-    lower_px = max(under_px - config.get_config().GRID_PX_STEP * config.get_config().PROFILE_STEPS, 0)
-    upper_px = under_px + config.get_config().GRID_PX_STEP * config.get_config().PROFILE_STEPS
-    px_grid =np.linspace(lower_px, upper_px, num=(upper_px - lower_px) // config.get_config().GRID_PX_STEP + 1)
+    def add_stop_orders(px_grid, delta_grid):
+        closed_delta = 0
+        for i in range(delta_grid.shape[0]):
+            order_delta = -delta_grid[i] + closed_delta
+            closed_delta += order_delta
+            # create target order
+            target_code.append(fut_code)
+            target_qty.append(order_delta)
+            target_px.append(px_grid[i])
 
-    delta_grid, porfolio_px_grid, porfolio_px_expiry_grid = utils.get_portfolio_params(fut_code, px_grid)
+    px_grid = np.zeros([config.get_config().NUM_BUY_STOPS])
+    stop_px = under_px
+    for i in range(config.get_config().NUM_BUY_STOPS):
+        stop_px += config.get_config().BUY_STOP_PX_STEP
+        px_grid[i] = stop_px
 
-    # plot portfolio profile
-    min_px = min(np.min(porfolio_px_grid), np.min(porfolio_px_expiry_grid))
-    max_px = max(np.max(porfolio_px_grid), np.max(porfolio_px_expiry_grid))
-    curr_px_line_x = np.array([under_px, under_px])
-    curr_px_line_y = np.array([min_px, max_px])
+    delta_grid, _, _ = utils.get_portfolio_params(fut_code, px_grid)
+    add_stop_orders(delta_grid)
 
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
-    ax.plot(px_grid, porfolio_px_grid, 'r-')
-    ax.plot(px_grid, porfolio_px_expiry_grid, 'bo')
-    ax.plot(curr_px_line_x, curr_px_line_y, 'g--')
-    ax.yaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%0.0f'))
-    ax.xaxis.set_major_formatter(matplotlib.ticker.FormatStrFormatter('%0.3f'))
-    ax.grid(True, linestyle='-', color='0.75')
+    px_grid = np.zeros([config.get_config().NUM_BUY_STOPS])
+    stop_px = under_px
+    for i in range(config.get_config().NUM_SELL_STOPS):
+        stop_px -= config.get_config().SELL_STOP_PX_STEP
+        px_grid[i] = stop_px
 
-plt.show(True)
+    delta_grid, _, _ = utils.get_portfolio_params(fut_code, px_grid)
+    add_stop_orders(delta_grid)
 
 target_orders_df = pd.DataFrame({
     'code': target_code,
