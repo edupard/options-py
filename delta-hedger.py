@@ -14,6 +14,9 @@ target_order_type = []
 def algo_A():
     return None
 
+def algo_B():
+    return None
+
 def default_algo():
     # find all futures
     positions_df = config.get_config().positions_df
@@ -62,6 +65,8 @@ if config.get_config().SCRIPT_PARAMS == "default":
     default_algo()
 elif config.get_config().SCRIPT_PARAMS == "A":
     algo_A()
+elif config.get_config().SCRIPT_PARAMS == "B":
+    algo_B()
 
 target_orders_df = pd.DataFrame({
     'code': target_code,
