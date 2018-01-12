@@ -6,8 +6,19 @@ from py_vollib.black.greeks.analytical import delta as calc_delta
 from py_vollib.black_scholes import black_scholes as black_scholes
 import numpy as np
 import config
+import math
 
 SECONDS_IN_DAY = 24 * 60 * 60
+
+def convert_to_view_px(px):
+    pxWhole = math.floor(px)
+    pxPart = px - pxWhole
+    pxPartConverted = round(pxPart * config.get_config().FUT_PRICE_COEFF)
+    return "%.0f'%03.0f" % (pxWhole, pxPartConverted)
+
+def convert_to_view_px_array(px_arr):
+    return [convert_to_view_px(px) for px in px_arr]
+
 
 def get_days(timedelta, year_days_count):
     return timedelta.total_seconds() / SECONDS_IN_DAY / year_days_count
@@ -23,6 +34,8 @@ def parse_input():
     DATA_FOLDER = args[0]
     S_TIME = args[1]
     RUN_TIME = datetime.datetime.strptime(S_TIME, '%Y-%m-%d %H:%M')
+    if (len(args) == 3):
+        config.get_config().SCRIPT_PARAMS = args[2]
 
     POSITIONS_FILE = "%s\\data\\%s\\positions.csv" % (SCRIPT_FOLDER, DATA_FOLDER)
     TIME_BARS_FILE = "%s\\data\\%s\\time_bars.csv" % (SCRIPT_FOLDER, DATA_FOLDER)

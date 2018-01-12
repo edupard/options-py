@@ -4,6 +4,7 @@ class Config(object):
         self.positions_df = None
         self.time_bars_df = None
         self.TARGET_ORDERS_FILE = None
+        self.SCRIPT_PARAMS = None
 
         self.YEAR_DAYS_COUNT = 360
         self.FUT_PRICE_COEFF = 320
@@ -13,9 +14,9 @@ class Config(object):
 
         #hedger params
         self.NUM_BUY_STOPS = 5
-        self.BUY_STOP_PX_STEP = 0.2
+        self.BUY_STOP_PX_STEP = 15 / self.FUT_PRICE_COEFF
         self.NUM_SELL_STOPS = 5
-        self.BUY_STOP_PX_STEP = 0.2
+        self.SELL_STOP_PX_STEP = 15 / self.FUT_PRICE_COEFF
 
 
 _config = Config()
