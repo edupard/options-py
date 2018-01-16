@@ -36,7 +36,7 @@ def basic_algo():
         if strikes.shape[0] == 0:
             px_grid = np.zeros((1))
             px_grid[0] = under_px
-            delta_grid = utils.get_portfolio_delta(fut_code, px_grid)
+            delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
             add_stop_orders(px_grid, delta_grid)
             continue
 
@@ -51,7 +51,7 @@ def basic_algo():
 
         px_grid = np.linspace(lower_bound, upper_bound, steps)
 
-        delta_grid = utils.get_portfolio_delta(fut_code, px_grid)
+        delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
         roll_right_signs = np.sign(delta_grid) * np.sign(np.roll(delta_grid, 1))
         roll_right_mask = roll_right_signs <= 0
         roll_right_mask = roll_right_mask[1:]
@@ -70,7 +70,7 @@ def basic_algo():
         if change_px.shape[0] == 0:
             px_grid = np.zeros((1))
             px_grid[0] = under_px
-            delta_grid = utils.get_portfolio_delta(fut_code, px_grid)
+            delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
             add_stop_orders(px_grid, delta_grid)
         else:
             px_dist = np.abs(change_px - under_px)
@@ -82,7 +82,7 @@ def basic_algo():
             for idx in range(stops_num):
                 px_grid[idx] = zero_delta_px + config.get_config().STOP_PX_STEP * (idx + 1)
 
-            delta_grid = utils.get_portfolio_delta(fut_code, px_grid)
+            delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
             add_stop_orders(px_grid, delta_grid)
 
             stops_num = config.get_config().STOPS_NUM
@@ -90,7 +90,7 @@ def basic_algo():
             for idx in range(stops_num):
                 px_grid[idx] = zero_delta_px - config.get_config().STOP_PX_STEP * (idx + 1)
 
-            delta_grid = utils.get_portfolio_delta(fut_code, px_grid)
+            delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
             add_stop_orders(px_grid, delta_grid)
 
     return target_code, target_qty, target_px, target_order_type

@@ -115,8 +115,19 @@ def get_portfolio_params(fut_code, px_grid):
 
     return delta_grid, porfolio_px_grid, porfolio_px_expiry_grid
 
+def default_time_shift_strategy(duration):
+    if duration < datetime.timedelta(days=1):
+        duration = datetime.timedelta(seconds=duration.total_seconds() / 2)
+    elif duration < datetime.timedelta(days=2):
+        duration_1 = datetime.timedelta(seconds=duration.total_seconds() / 2)
+        duration_2 = duration - datetime.timedelta(days=1)
+        duration = datetime.timedelta(seconds=(duration_1.total_seconds() + duration_2.total_seconds()) / 2)
+    else:
+        duration = duration - datetime.timedelta(days=1)
+    return duration
 
-def get_portfolio_delta(fut_code, px_grid):
+
+def get_portfolio_delta(fut_code, px_grid, time_delta_strategy):
     positions_df = config.get_config().positions_df
     # initialize ret values
     delta_grid = np.zeros_like(px_grid)
@@ -141,7 +152,10 @@ def get_portfolio_delta(fut_code, px_grid):
         for index, row in options_df.iterrows():
             flag = 'c' if row.Right == 'Call' else 'p'
             K = row.Strike
-            t = get_days(row.Expiration - config.get_config().RUN_TIME, config.get_config().YEAR_DAYS_COUNT)
+            duration = row.Expiration - config.get_config().RUN_TIME
+            duration = time_delta_strategy(duration)
+
+            t = get_days(duration, config.get_config().YEAR_DAYS_COUNT)
             r = row.Ir / 100
             sigma = row.Vol / 100
             opt_pos = row.Position
