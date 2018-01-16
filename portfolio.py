@@ -11,13 +11,16 @@ utils.parse_input()
 positions_df = config.get_config().positions_df
 time_bars_df = config.get_config().time_bars_df
 
-fut_codes = positions_df[positions_df.SecType == 'FOP'].Underlying.unique()
+fut_codes_by_opt_pos = positions_df[positions_df.SecType == 'FOP'].Underlying.unique()
+fut_codes_by_fut_pos = positions_df[positions_df.SecType == 'FUT'].Code.unique()
+fut_codes = set(fut_codes_by_opt_pos).union(set(fut_codes_by_fut_pos))
+
 
 for fut_code in fut_codes:
     # sort all fut timebars
-    sorted_bars = time_bars_df[time_bars_df.Code == fut_code].sort_values(by='DateTime')
+    sorted_bars = time_bars_df[time_bars_df.Code == fut_code].sort_values(by='DateTime', ascending=False)
     # get last bar
-    last_bar = sorted_bars.iloc[-1]
+    last_bar = sorted_bars.iloc[0]
     # get undelying px
     under_px =last_bar.Close
 
