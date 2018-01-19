@@ -95,7 +95,7 @@ def basic_algo():
 
                     delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
                     add_stop_orders(buy_px_grid, delta_grid)
-                    set_order_sequence(np.linspace(0, stops_num - 1, stops_num))
+                    set_order_sequence(np.linspace(0, stops_num - 1, stops_num, dtype=np.int32))
 
                 elif under_px > max_strike:
                     sell_px_grid = np.zeros(shape=(stops_num))
