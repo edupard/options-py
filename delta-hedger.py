@@ -10,9 +10,10 @@ utils.parse_input()
 
 
 if config.get_config().SCRIPT_PARAMS == "BASIC":
-    target_code, target_qty, target_px, target_order_type = basic_algo()
+    target_order_idx, target_code, target_qty, target_px, target_order_type = basic_algo()
 
 target_orders_df = pd.DataFrame({
+    'idx' : target_order_idx,
     'code': target_code,
     'qty': target_qty,
     'px': target_px,

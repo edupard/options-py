@@ -6,6 +6,7 @@ import matplotlib
 import utils
 import config
 
+
 utils.parse_input()
 
 # find all futures
