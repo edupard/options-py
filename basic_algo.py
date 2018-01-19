@@ -16,7 +16,7 @@ def basic_algo():
 
     fut_codes = utils.get_fut_codes(positions_df)
 
-    def add_stop_orders(px_grid, delta_grid):
+    def add_stop_orders(px_grid, delta_grid, order_type = 'STP'):
         closed_delta = 0
         for i in range(delta_grid.shape[0]):
             order_delta = round(-delta_grid[i] + closed_delta)
@@ -25,7 +25,7 @@ def basic_algo():
             target_code.append(fut_code)
             target_qty.append(order_delta)
             target_px.append(px_grid[i])
-            target_order_type.append('STP')
+            target_order_type.append(order_type)
 
     base_order_idx = 0
 
@@ -35,19 +35,20 @@ def basic_algo():
             target_order_idx.append(base_order_idx + order_idx)
         base_order_idx += order_idxs.shape[0]
 
-
     for fut_code in fut_codes:
 
         # get undelying px
         last_bar = utils.get_last_bar(fut_code)
         under_px = last_bar.Close
 
+
         strikes = positions_df[positions_df.Underlying == fut_code].Strike.values
         if strikes.shape[0] == 0:
+            #push delta hedging order
             px_grid = np.zeros((1))
             px_grid[0] = under_px
             delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
-            add_stop_orders(px_grid, delta_grid)
+            add_stop_orders(px_grid, delta_grid, order_type='MKT')
             set_order_sequence([0])
             continue
 
@@ -82,7 +83,7 @@ def basic_algo():
             px_grid = np.zeros((1))
             px_grid[0] = under_px
             delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
-            add_stop_orders(px_grid, delta_grid)
+            add_stop_orders(px_grid, delta_grid, order_type = 'MKT')
             set_order_sequence([0])
         else:
             px_dist = np.abs(change_px - under_px)

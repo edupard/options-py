@@ -46,6 +46,8 @@ def parse_input():
 
     positions_df = pd.read_csv(POSITIONS_FILE)
     positions_df['Expiration'] = pd.to_datetime(positions_df.Expiry, format='%Y-%m-%d %H:%M')
+    # hack
+    # positions_df.Position = positions_df.Position * 100
     time_bars_df = pd.read_csv(TIME_BARS_FILE)
     time_bars_df['DateTime'] = pd.to_datetime(time_bars_df.Time, format='%Y-%m-%d %H:%M')
 

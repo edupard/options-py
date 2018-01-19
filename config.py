@@ -18,7 +18,7 @@ class Config(object):
 
         #basic_algo params
         self.STRIKE_STEP = 0.25
-        self.STOPS_NUM = 2
+        self.STOPS_NUM = 1
         self.STOP_PX_STEP = 60 / self.FUT_PRICE_COEFF
 
 
