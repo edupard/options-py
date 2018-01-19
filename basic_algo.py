@@ -4,6 +4,8 @@ import config
 
 
 def basic_algo():
+    stops_num = config.get_config().STOPS_NUM
+
     target_order_idx = []
     target_code = []
     target_qty = []
@@ -79,24 +81,64 @@ def basic_algo():
         change_idx = np.where(change_size_mask)[0]
         change_px = px_grid[change_idx]
 
+        # options exists & delta doesn't change sign
         if change_px.shape[0] == 0:
             px_grid = np.zeros((1))
             px_grid[0] = under_px
             delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
-            add_stop_orders(px_grid, delta_grid, order_type = 'MKT')
-            set_order_sequence([0])
+
+            if round(delta_grid[0]) == 0:
+                if under_px < min_strike:
+                    buy_px_grid = np.zeros(shape=(stops_num))
+                    for idx in range(stops_num):
+                        buy_px_grid[idx] = min_strike + config.get_config().STOP_PX_STEP * idx
+
+                    delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
+                    add_stop_orders(buy_px_grid, delta_grid)
+                    set_order_sequence(np.linspace(0, stops_num - 1, stops_num))
+
+                elif under_px > max_strike:
+                    sell_px_grid = np.zeros(shape=(stops_num))
+                    for idx in range(stops_num):
+                        sell_px_grid[idx] = max_strike - config.get_config().STOP_PX_STEP * idx
+
+                    delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
+                    add_stop_orders(sell_px_grid, delta_grid)
+                    set_order_sequence(np.linspace(0, stops_num - 1, stops_num, dtype=np.int32))
+                else:
+                    exit(1)
+
+            else:
+                add_stop_orders(px_grid, delta_grid, order_type = 'MKT')
+                set_order_sequence([0])
+        # delta changes sign
         else:
             px_dist = np.abs(change_px - under_px)
             zero_delta_px_idx = np.argsort(px_dist)[0]
             zero_delta_px = change_px[zero_delta_px_idx]
 
-            stops_num = config.get_config().STOPS_NUM
             buy_px_grid = np.zeros(shape=(stops_num))
             for idx in range(stops_num):
                 buy_px_grid[idx] = zero_delta_px + config.get_config().STOP_PX_STEP * (idx + 1)
 
             delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
-            add_stop_orders(buy_px_grid, delta_grid)
+            rounded_delta_grid = np.round(delta_grid)
+            mask = rounded_delta_grid == 0
+            if np.all(mask):
+                right_strike_mask = strikes > zero_delta_px
+                strikes_selection = strikes[right_strike_mask]
+                if strikes_selection.shape[0] == 0:
+                    exit(0)
+                target_strike = np.min(strikes_selection)
+
+                buy_px_grid = np.zeros(shape=(stops_num))
+                for idx in range(stops_num):
+                    buy_px_grid[idx] = target_strike + config.get_config().STOP_PX_STEP * idx
+
+                delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
+                add_stop_orders(buy_px_grid, delta_grid)
+            else:
+                add_stop_orders(buy_px_grid, delta_grid)
 
             stops_num = config.get_config().STOPS_NUM
             sell_px_grid = np.zeros(shape=(stops_num))
@@ -104,7 +146,23 @@ def basic_algo():
                 sell_px_grid[idx] = zero_delta_px - config.get_config().STOP_PX_STEP * (idx + 1)
 
             delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
-            add_stop_orders(sell_px_grid, delta_grid)
+            rounded_delta_grid = np.round(delta_grid)
+            mask = rounded_delta_grid == 0
+            if np.all(mask):
+                left_strike_mask = strikes < zero_delta_px
+                strikes_selection = strikes[left_strike_mask]
+                if strikes_selection.shape[0] == 0:
+                    exit(0)
+                target_strike = np.max(strikes_selection)
+
+                sell_px_grid = np.zeros(shape=(stops_num))
+                for idx in range(stops_num):
+                    sell_px_grid[idx] = target_strike - config.get_config().STOP_PX_STEP * idx
+
+                delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
+                add_stop_orders(sell_px_grid, delta_grid)
+            else:
+                add_stop_orders(sell_px_grid, delta_grid)
 
             orders_px_grid = np.concatenate((buy_px_grid, sell_px_grid))
             orders_zero_delta_px_distance_grid = np.abs(orders_px_grid - zero_delta_px)
