@@ -1,16 +1,19 @@
 import pandas as pd
-import numpy as np
+
 
 import utils
 import config
 
 from basic_algo import basic_algo
+from algo_23_00 import algo_23_00
 
 utils.parse_input()
 
 
 if config.get_config().SCRIPT_PARAMS == "BASIC":
     target_order_idx, target_code, target_qty, target_px, target_order_type = basic_algo()
+elif config.get_config().SCRIPT_PARAMS == "23_00":
+    target_order_idx, target_code, target_qty, target_px, target_order_type = algo_23_00()
 
 target_orders_df = pd.DataFrame({
     'idx' : target_order_idx,

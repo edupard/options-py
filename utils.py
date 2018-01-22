@@ -26,6 +26,32 @@ def get_days(timedelta, year_days_count):
     return timedelta.total_seconds() / SECONDS_IN_DAY / year_days_count
 
 
+def parse_test_input(DATA_FOLDER, S_TIME):
+    # script folder
+    SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))
+
+    parser = OptionParser()
+    (options, args) = parser.parse_args()
+
+    RUN_TIME = datetime.datetime.strptime(S_TIME, '%Y-%m-%d %H:%M')
+
+    POSITIONS_FILE = "%s\\test_data\\%s\\positions.csv" % (SCRIPT_FOLDER, DATA_FOLDER)
+    TIME_BARS_FILE = "%s\\test_data\\%s\\time_bars.csv" % (SCRIPT_FOLDER, DATA_FOLDER)
+    TARGET_ORDERS_FILE = "%s\\test_data\\%s\\target_orders.csv" % (SCRIPT_FOLDER, DATA_FOLDER)
+
+    positions_df = pd.read_csv(POSITIONS_FILE)
+    positions_df['Expiration'] = pd.to_datetime(positions_df.Expiry, format='%Y-%m-%d %H:%M')
+    # hack
+    # positions_df.Position = positions_df.Position * 100
+    time_bars_df = pd.read_csv(TIME_BARS_FILE)
+    time_bars_df['DateTime'] = pd.to_datetime(time_bars_df.Time, format='%Y-%m-%d %H:%M')
+
+    config.get_config().RUN_TIME = RUN_TIME
+    config.get_config().positions_df = positions_df
+    config.get_config().time_bars_df = time_bars_df
+    config.get_config().TARGET_ORDERS_FILE = TARGET_ORDERS_FILE
+
+
 def parse_input():
     # script folder
     SCRIPT_FOLDER = os.path.dirname(os.path.abspath(__file__))

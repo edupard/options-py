@@ -15,14 +15,19 @@ class Config(object):
         self.PRICE_STEP = 5 / self.FUT_PRICE_COEFF
         self.GRID_PX_STEP = 0.07
         self.PROFILE_STEPS = 10
-
-        #basic_algo params
         self.STRIKE_STEP = 0.25
-        self.STOPS_NUM = 1
-        self.STOP_PX_STEP = 60 / self.FUT_PRICE_COEFF
+
+        # basic
+        self.STOPS_NUM_BASIC = 3
+        self.STOP_PX_STEP_BASIC = 60 / self.FUT_PRICE_COEFF
+
+        # 23_00
+        self.STOPS_NUM_23_00 = 3
+        self.STOP_PX_STEP_23_00 = 60 / self.FUT_PRICE_COEFF
 
 
 _config = Config()
+
 
 def get_config():
     return _config
