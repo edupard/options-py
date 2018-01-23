@@ -63,8 +63,11 @@ def parse_input():
     DATA_FOLDER = args[0]
     S_TIME = args[1]
     RUN_TIME = datetime.datetime.strptime(S_TIME, '%Y-%m-%d %H:%M')
-    if (len(args) == 3):
+    if (len(args) >= 3):
         config.get_config().SCRIPT_PARAMS = args[2]
+
+    if (len(args) >= 4):
+        config.get_config().UPTREND = args[3] == "True"
 
     POSITIONS_FILE = "%s\\data\\%s\\positions.csv" % (SCRIPT_FOLDER, DATA_FOLDER)
     TIME_BARS_FILE = "%s\\data\\%s\\time_bars.csv" % (SCRIPT_FOLDER, DATA_FOLDER)
@@ -143,6 +146,7 @@ def get_portfolio_params(fut_code, px_grid):
 
     return delta_grid, porfolio_px_grid, porfolio_px_expiry_grid
 
+
 def default_time_shift_strategy(duration):
     if duration < datetime.timedelta(days=1):
         duration = datetime.timedelta(seconds=duration.total_seconds() / 2)
@@ -202,6 +206,17 @@ def get_fut_codes(positions_df):
     return fut_codes
 
 
+def get_specific_bar(fut_code, hour, timedelta=datetime.timedelta(seconds=0), duration='4 hours'):
+    time_bars_df = config.get_config().time_bars_df
+    bar_time = config.get_config().RUN_TIME.replace(hour=19, minute=00)
+    bar_time -= timedelta
+
+    selection_df = time_bars_df[time_bars_df.DateTime == bar_time]
+    if selection_df.shape[0] == 0:
+        return None
+    return selection_df.iloc[0]
+
+
 def get_last_bar(fut_code, duration='4 hours'):
     time_bars_df = config.get_config().time_bars_df
     # sort all fut timebars
@@ -211,3 +226,25 @@ def get_last_bar(fut_code, duration='4 hours'):
     last_bar = sorted_bars.iloc[0]
 
     return last_bar
+
+
+def add_stop_orders(fut_code, px_grid, delta_grid, order_type='STP'):
+    closed_delta = 0
+    for i in range(delta_grid.shape[0]):
+        order_delta = round(-delta_grid[i] + closed_delta)
+        closed_delta -= order_delta
+        # create target order
+        config.get_config().target_code.append(fut_code)
+        config.get_config().target_qty.append(order_delta)
+        config.get_config().target_px.append(px_grid[i])
+        config.get_config().target_order_type.append(order_type)
+
+
+_base_order_idx = 0
+
+
+def set_order_sequence(order_idxs):
+    global _base_order_idx
+    for order_idx in order_idxs:
+        config.get_config().target_order_idx.append(_base_order_idx + order_idx)
+    _base_order_idx += order_idxs.shape[0]
