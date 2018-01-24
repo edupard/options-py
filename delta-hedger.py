@@ -7,6 +7,7 @@ import config
 from basic_algo import basic_algo
 from algo_close_delta import algo_close_delta
 from algo_night_stops import algo_night_stops
+from algo_07_00 import algo_07_00
 
 utils.parse_input()
 
@@ -17,7 +18,8 @@ elif config.get_config().SCRIPT_PARAMS == "CLOSE_DELTA":
     algo_close_delta()
 elif config.get_config().SCRIPT_PARAMS == "NIGHT":
     algo_night_stops()
-
+elif config.get_config().SCRIPT_PARAMS == "07_00":
+    algo_07_00()
 
 target_orders_df = pd.DataFrame({
     'idx' : config.get_config().target_order_idx,

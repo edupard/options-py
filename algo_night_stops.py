@@ -18,7 +18,7 @@ def algo_night_stops():
         # last_bar = utils.get_specific_bar(fut_code, hour=23, timedelta=datetime.timedelta(days=1))
         # get undelying px
         last_bar = utils.get_last_bar(fut_code)
-        if last_bar.DateTime.hour != 23:
+        if last_bar.DateTime.hour != config.get_config().NIGTH_BAR_START_HOUR:
             exit(1)
 
         under_px = last_bar.Close
@@ -49,7 +49,7 @@ def algo_night_stops():
                 config.get_config().STOPS_NUM_NIGHT_BUY + idx] = last_zero_delta_px + config.get_config().STOP_PX_STEP_NIGHT_SAFE_BUY * (
                     idx + 1)
 
-        delta_grid = utils.get_portfolio_delta(fut_code, delta_buy_px_grid, utils.default_time_shift_strategy)
+        delta_grid = utils.get_portfolio_delta_on_grid(fut_code, delta_buy_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
         utils.add_stop_orders(fut_code, buy_px_grid, delta_grid)
 
         # basic stops on sell + safe stops on sell
@@ -73,7 +73,7 @@ def algo_night_stops():
                 config.get_config().STOPS_NUM_NIGHT_SELL + idx] = last_zero_delta_px - config.get_config().STOP_PX_STEP_NIGHT_SAFE_SELL * (
                     idx + 1)
 
-        delta_grid = utils.get_portfolio_delta(fut_code, delta_sell_px_grid, utils.default_time_shift_strategy)
+        delta_grid = utils.get_portfolio_delta_on_grid(fut_code, delta_sell_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
         utils.add_stop_orders(fut_code, sell_px_grid, delta_grid)
 
         orders_px_grid = np.concatenate((buy_px_grid, sell_px_grid))

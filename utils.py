@@ -158,8 +158,12 @@ def default_time_shift_strategy(duration):
         duration = duration - datetime.timedelta(days=1)
     return duration
 
+def get_portfolio_delta(fut_code, px, time_delta_strategy, run_time):
+    px_grid = np.array([px])
+    delta_grid = get_portfolio_delta_on_grid(fut_code, px_grid, time_delta_strategy, run_time)
+    return delta_grid[0]
 
-def get_portfolio_delta(fut_code, px_grid, time_delta_strategy):
+def get_portfolio_delta_on_grid(fut_code, px_grid, time_delta_strategy, run_time):
     positions_df = config.get_config().positions_df
     # initialize ret values
     delta_grid = np.zeros_like(px_grid)
@@ -184,7 +188,7 @@ def get_portfolio_delta(fut_code, px_grid, time_delta_strategy):
         for index, row in options_df.iterrows():
             flag = 'c' if row.Right == 'Call' else 'p'
             K = row.Strike
-            duration = row.Expiration - config.get_config().RUN_TIME
+            duration = row.Expiration - run_time
             duration = time_delta_strategy(duration)
 
             t = get_days(duration, config.get_config().YEAR_DAYS_COUNT)
@@ -205,13 +209,12 @@ def get_fut_codes(positions_df):
     fut_codes = set(fut_codes_by_opt_pos).union(set(fut_codes_by_fut_pos))
     return fut_codes
 
-
-def get_specific_bar(fut_code, hour, timedelta=datetime.timedelta(seconds=0), duration='4 hours'):
+def get_specific_bar(fut_code, hour, minute = 0, timedelta=datetime.timedelta(seconds=0), duration='4 hours'):
     time_bars_df = config.get_config().time_bars_df
-    bar_time = config.get_config().RUN_TIME.replace(hour=19, minute=00)
-    bar_time -= timedelta
+    bar_datetime = config.get_config().RUN_TIME.replace(hour=hour, minute=minute)
+    bar_datetime -= timedelta
 
-    selection_df = time_bars_df[time_bars_df.DateTime == bar_time]
+    selection_df = time_bars_df[(time_bars_df.Code == fut_code) & (time_bars_df.Length == duration) & (time_bars_df.DateTime == bar_datetime)]
     if selection_df.shape[0] == 0:
         return None
     return selection_df.iloc[0]

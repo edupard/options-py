@@ -30,6 +30,8 @@ class Config(object):
         self.STOP_PX_STEP_BASIC = 60 / self.FUT_PRICE_COEFF
 
         # night_stops
+        self.NIGTH_BAR_START_HOUR = 23
+
         self.STOPS_NUM_NIGHT_BUY = 1
         self.STOPS_NUM_NIGHT_SELL = 1
 
@@ -46,6 +48,21 @@ class Config(object):
         self.STOP_PX_STEP_NIGHT_FWD_SELL = 10 / self.FUT_PRICE_COEFF
 
         # 07:00
+        self.ALGO_07_00_FIRST_BAR_START_HOUR = 2
+        self.ALGO_07_00_SECOND_BAR_START_HOUR = 3
+        self.ALGO_07_00_BUY_ROOM = 10 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_BUY_FWD = 15 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_MAIN_BUY_STOPS = 3
+        self.ALGO_07_00_BUY_MAIN_STEP = 15 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_BUY_SAFE_STEP = 60 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_SAFE_BUY_STOPS = 3
+
+        self.ALGO_07_00_SELL_ROOM = 10 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_SELL_FWD = 15 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_MAIN_SELL_STOPS = 3
+        self.ALGO_07_00_SELL_MAIN_STEP = 15 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_SELL_SAFE_STEP = 60 / self.FUT_PRICE_COEFF
+        self.ALGO_07_00_SAFE_SELL_STOPS = 3
 
 
 _config = Config()

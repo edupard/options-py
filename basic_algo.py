@@ -25,7 +25,7 @@ def basic_algo():
             # push delta hedging order
             px_grid = np.zeros((1))
             px_grid[0] = under_px
-            delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
+            delta_grid = utils.get_portfolio_delta_on_grid(fut_code, px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
             utils.add_stop_orders(fut_code, px_grid, delta_grid, order_type='MKT')
             utils.set_order_sequence(np.array([0]))
             continue
@@ -41,7 +41,7 @@ def basic_algo():
 
         px_grid = np.linspace(lower_bound, upper_bound, steps)
 
-        delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
+        delta_grid = utils.get_portfolio_delta_on_grid(fut_code, px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
         roll_right_signs = np.sign(delta_grid) * np.sign(np.roll(delta_grid, 1))
         roll_right_mask = roll_right_signs <= 0
         roll_right_mask = roll_right_mask[1:]
@@ -61,7 +61,7 @@ def basic_algo():
         if change_px.shape[0] == 0:
             px_grid = np.zeros((1))
             px_grid[0] = under_px
-            delta_grid = utils.get_portfolio_delta(fut_code, px_grid, utils.default_time_shift_strategy)
+            delta_grid = utils.get_portfolio_delta_on_grid(fut_code, px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
 
             # delta is zero at current price
             if round(delta_grid[0]) == 0:
@@ -70,7 +70,7 @@ def basic_algo():
                     for idx in range(stops_num):
                         buy_px_grid[idx] = min_strike + config.get_config().STOP_PX_STEP_BASIC * idx
 
-                    delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
+                    delta_grid = utils.get_portfolio_delta_on_grid(fut_code, buy_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
                     utils.add_stop_orders(fut_code, buy_px_grid, delta_grid)
                     utils.set_order_sequence(np.linspace(0, stops_num - 1, stops_num, dtype=np.int32))
 
@@ -79,7 +79,7 @@ def basic_algo():
                     for idx in range(stops_num):
                         sell_px_grid[idx] = max_strike - config.get_config().STOP_PX_STEP_BASIC * idx
 
-                    delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
+                    delta_grid = utils.get_portfolio_delta_on_grid(fut_code, sell_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
                     utils.add_stop_orders(fut_code, sell_px_grid, delta_grid)
                     utils.set_order_sequence(np.linspace(0, stops_num - 1, stops_num, dtype=np.int32))
                 else:
@@ -93,7 +93,7 @@ def basic_algo():
                     for idx in range(stops_num):
                         buy_px_grid[idx] = target_strike + config.get_config().STOP_PX_STEP_BASIC * idx
 
-                    delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
+                    delta_grid = utils.get_portfolio_delta_on_grid(fut_code, buy_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
                     utils.add_stop_orders(fut_code, buy_px_grid, delta_grid)
 
                     left_strike_mask = strikes <= under_px
@@ -106,7 +106,7 @@ def basic_algo():
                     for idx in range(stops_num):
                         sell_px_grid[idx] = target_strike - config.get_config().STOP_PX_STEP_BASIC * idx
 
-                    delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
+                    delta_grid = utils.get_portfolio_delta_on_grid(fut_code, sell_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
                     utils.add_stop_orders(fut_code, sell_px_grid, delta_grid)
 
                     orders_px_grid = np.concatenate((buy_px_grid, sell_px_grid))
@@ -130,7 +130,7 @@ def basic_algo():
             for idx in range(stops_num):
                 buy_px_grid[idx] = zero_delta_px + config.get_config().STOP_PX_STEP_BASIC * (idx + 1)
 
-            delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
+            delta_grid = utils.get_portfolio_delta_on_grid(fut_code, buy_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
             rounded_delta_grid = np.round(delta_grid)
             mask = rounded_delta_grid == 0
             # all buy stops are zero
@@ -145,7 +145,7 @@ def basic_algo():
                 for idx in range(stops_num):
                     buy_px_grid[idx] = target_strike + config.get_config().STOP_PX_STEP_BASIC * idx
 
-                delta_grid = utils.get_portfolio_delta(fut_code, buy_px_grid, utils.default_time_shift_strategy)
+                delta_grid = utils.get_portfolio_delta_on_grid(fut_code, buy_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
                 utils.add_stop_orders(fut_code, buy_px_grid, delta_grid)
             else:
                 utils.add_stop_orders(fut_code, buy_px_grid, delta_grid)
@@ -155,7 +155,7 @@ def basic_algo():
             for idx in range(stops_num):
                 sell_px_grid[idx] = zero_delta_px - config.get_config().STOP_PX_STEP_BASIC * (idx + 1)
 
-            delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
+            delta_grid = utils.get_portfolio_delta_on_grid(fut_code, sell_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
             rounded_delta_grid = np.round(delta_grid)
             mask = rounded_delta_grid == 0
             # all sell stops are zero
@@ -170,7 +170,7 @@ def basic_algo():
                 for idx in range(stops_num):
                     sell_px_grid[idx] = target_strike - config.get_config().STOP_PX_STEP_BASIC * idx
 
-                delta_grid = utils.get_portfolio_delta(fut_code, sell_px_grid, utils.default_time_shift_strategy)
+                delta_grid = utils.get_portfolio_delta_on_grid(fut_code, sell_px_grid, utils.default_time_shift_strategy, config.get_config().RUN_TIME)
                 utils.add_stop_orders(fut_code, sell_px_grid, delta_grid)
             else:
                 utils.add_stop_orders(fut_code, sell_px_grid, delta_grid)
