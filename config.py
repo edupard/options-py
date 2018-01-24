@@ -78,8 +78,18 @@ class Config(object):
         self.ALGO_07_00_SELL_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
 
         # NEWS
-        self.ALGO_NEWS_FIRST_BAR_START_HOUR = 11
-        self.ALGO_NEWS_SECOND_BAR_START_HOUR = 15
+        # 4 h
+        self.ALGO_NEWS_4H_START_HOUR = 11
+        # 5 m
+        self.ALGO_NEWS_5M_START_HOUR = 15
+        self.ALGO_NEWS_5M_START_MINUTE = 0
+        self.ALGO_NEWS_5M_END_HOUR = 16
+        self.ALGO_NEWS_5M_END_MINUTE = 20
+        # 1 m
+        self.ALGO_NEWS_1M_START_HOUR = 16
+        self.ALGO_NEWS_1M_START_MINUTE = 25
+        self.ALGO_NEWS_1M_END_HOUR = 16
+        self.ALGO_NEWS_1M_END_MINUTE = 28
 
         # buy
         # first
@@ -106,6 +116,39 @@ class Config(object):
         # safe
         self.ALGO_NEWS_SAFE_SELL_STOPS = 1
         self.ALGO_NEWS_SELL_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        
+        # STAT
+        # 5 m
+        self.ALGO_STAT_5M_START_HOUR = 15
+        self.ALGO_STAT_5M_START_MINUTE = 0
+        self.ALGO_STAT_5M_END_HOUR = 16
+        self.ALGO_STAT_5M_END_MINUTE = 25
+
+        # buy
+        # first
+        self.ALGO_STAT_BUY_ROOM = 10 / self.FUT_PRICE_COEFF
+        self.ALGO_STAT_BUY_FWD = 50 / self.FUT_PRICE_COEFF
+        self.ALGO_STAT_BUY_MAIN_STEP = 50 / self.FUT_PRICE_COEFF  # or 15 (step to find first non-zero delta)
+        # additional
+        self.ALGO_STAT_MAIN_BUY_ADD_STOPS = 2
+        self.ALGO_STAT_BUY_ADD_FWD = 15 / self.FUT_PRICE_COEFF
+        self.ALGO_STAT_BUY_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF  # grid step !!!
+        # safe
+        self.ALGO_STAT_SAFE_BUY_STOPS = 3
+        self.ALGO_STAT_BUY_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+
+        # sell
+        # first
+        self.ALGO_STAT_SELL_ROOM = 10 / self.FUT_PRICE_COEFF
+        self.ALGO_STAT_SELL_FWD = 50 / self.FUT_PRICE_COEFF
+        self.ALGO_STAT_SELL_MAIN_STEP = 50 / self.FUT_PRICE_COEFF  # or 15 (step to find first non-zero delta)
+        # additional
+        self.ALGO_STAT_MAIN_SELL_ADD_STOPS = 2
+        self.ALGO_STAT_SELL_ADD_FWD = 15 / self.FUT_PRICE_COEFF
+        self.ALGO_STAT_SELL_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF  # grid step !!!
+        # safe
+        self.ALGO_STAT_SAFE_SELL_STOPS = 1
+        self.ALGO_STAT_SELL_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
         
         
         

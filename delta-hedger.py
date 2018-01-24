@@ -9,6 +9,7 @@ from algo_close_delta import algo_close_delta
 from algo_night_stops import algo_night_stops
 from algo_07_00 import algo_07_00
 from algo_news import algo_news
+from algo_stat import algo_stat
 
 utils.parse_input()
 
@@ -23,6 +24,8 @@ elif config.get_config().SCRIPT_PARAMS == "07_00":
     algo_07_00()
 elif config.get_config().SCRIPT_PARAMS == "NEWS":
     algo_news()
+elif config.get_config().SCRIPT_PARAMS == "STAT":
+    algo_stat()
 
 target_orders_df = pd.DataFrame({
     'idx' : config.get_config().target_order_idx,

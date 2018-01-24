@@ -14,18 +14,45 @@ def algo_news():
     fut_codes = utils.get_fut_codes(positions_df)
 
     for fut_code in fut_codes:
-        first_bar = utils.get_specific_bar(fut_code, hour=config.get_config().ALGO_NEWS_FIRST_BAR_START_HOUR)
-        second_bar = utils.get_specific_bar(fut_code, hour=config.get_config().ALGO_NEWS_SECOND_BAR_START_HOUR)
+        bar_4h = utils.get_specific_bar(fut_code, hour=config.get_config().ALGO_NEWS_4H_START_HOUR)
+        bars_5_min = utils.get_bars_range(fut_code,
+                                          start_hour=config.get_config().ALGO_NEWS_5M_START_HOUR,
+                                          start_minute=config.get_config().ALGO_NEWS_5M_START_MINUTE,
+                                          end_hour=config.get_config().ALGO_NEWS_5M_END_HOUR,
+                                          end_minute=config.get_config().ALGO_NEWS_5M_END_MINUTE,
+                                          duration='5 mins',
+                                          )
+        bars_1_min = utils.get_bars_range(fut_code,
+                                          start_hour=config.get_config().ALGO_NEWS_1M_START_HOUR,
+                                          start_minute=config.get_config().ALGO_NEWS_1M_START_MINUTE,
+                                          end_hour=config.get_config().ALGO_NEWS_1M_END_HOUR,
+                                          end_minute=config.get_config().ALGO_NEWS_1M_END_MINUTE,
+                                          duration='1 min',
+                                          )
+        second_bar_open = bars_5_min.iloc[0].Open
+        second_bar_close= bars_1_min.iloc[-1].Close
+        second_bar_high = second_bar_open
+        second_bar_low = second_bar_open
+        for _, bar in bars_5_min.iterrows():
+            second_bar_high = max(second_bar_high, bar.High)
+        for _, bar in bars_1_min.iterrows():
+            second_bar_high = max(second_bar_high, bar.High)
 
-        if first_bar.Close > first_bar.Open:
-            high = max(first_bar.High, second_bar.High)
-            low = min(first_bar.Open, second_bar.Low)
-        elif first_bar.Close < first_bar.Open:
-            high = max(first_bar.Open, second_bar.High)
-            low = min(first_bar.Low, second_bar.Low)
+        for _, bar in bars_5_min.iterrows():
+            second_bar_low = max(second_bar_low, bar.Low)
+        for _, bar in bars_1_min.iterrows():
+            second_bar_low = max(second_bar_low, bar.Low)
+
+
+        if bar_4h.Close > bar_4h.Open:
+            high = max(bar_4h.High, second_bar_high)
+            low = min(bar_4h.Open, second_bar_low)
+        elif bar_4h.Close < bar_4h.Open:
+            high = max(bar_4h.Open, second_bar_high)
+            low = min(bar_4h.Low, second_bar_low)
         else:
-            high = max(first_bar.High, second_bar.High)
-            low = min(first_bar.Low, second_bar.Low)
+            high = max(bar_4h.High, second_bar_high)
+            low = min(bar_4h.Low, second_bar_low)
 
         last_bar = utils.get_last_bar(fut_code)
         last_px = last_bar.Close

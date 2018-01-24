@@ -219,6 +219,16 @@ def get_specific_bar(fut_code, hour, minute = 0, timedelta=datetime.timedelta(se
         return None
     return selection_df.iloc[0]
 
+def get_bars_range(fut_code, start_hour, start_minute, end_hour, end_minute, duration):
+    time_bars_df = config.get_config().time_bars_df
+
+    bar_start_datetime = config.get_config().RUN_TIME.replace(hour=start_hour, minute=start_minute)
+    bar_end_datetime = config.get_config().RUN_TIME.replace(hour=end_hour, minute=end_minute)
+
+    filtered_bars = time_bars_df[(time_bars_df.Code == fut_code) & (time_bars_df.Length == duration) & (time_bars_df.DateTime>=bar_start_datetime) & (time_bars_df.DateTime<=bar_end_datetime)]
+    sorted_bars = filtered_bars.sort_values(by='DateTime', ascending=True)
+    return sorted_bars
+
 
 def get_last_bar(fut_code, duration='4 hours'):
     time_bars_df = config.get_config().time_bars_df
