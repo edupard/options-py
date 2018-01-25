@@ -1,7 +1,7 @@
 import utils
 import config
 
-from fwd_levels_algo import fwd_levels_algo, FwdLevelsAlgoParams
+from main_levels_algo import main_levels_algo
 
 def algo_news():
     # shift time
@@ -14,21 +14,26 @@ def algo_news():
     fut_codes = utils.get_fut_codes(positions_df)
 
     for fut_code in fut_codes:
-        bar_4h = utils.get_specific_bar(fut_code, hour=config.get_config().ALGO_NEWS_4H_START_HOUR)
+        BAR_4H_S_H, BAR_4H_S_M = config.get_config().ALGO_NEWS_4H_BAR
+        bar_4h = utils.get_specific_bar(fut_code, hour=BAR_4H_S_H, minute=BAR_4H_S_M)
+
+        M5_S_H, M5_S_M, M5_E_H, M5_E_M =  config.get_config().ALGO_NEWS_5M_RANGE
         bars_5_min = utils.get_bars_range(fut_code,
-                                          start_hour=config.get_config().ALGO_NEWS_5M_START_HOUR,
-                                          start_minute=config.get_config().ALGO_NEWS_5M_START_MINUTE,
-                                          end_hour=config.get_config().ALGO_NEWS_5M_END_HOUR,
-                                          end_minute=config.get_config().ALGO_NEWS_5M_END_MINUTE,
+                                          start_hour=M5_S_H,
+                                          start_minute=M5_S_M,
+                                          end_hour=M5_E_H,
+                                          end_minute=M5_E_M,
                                           duration='5 mins',
                                           )
+        M1_S_H, M1_S_M, M1_E_H, M1_E_M = config.get_config().ALGO_NEWS_1M_RANGE
         bars_1_min = utils.get_bars_range(fut_code,
-                                          start_hour=config.get_config().ALGO_NEWS_1M_START_HOUR,
-                                          start_minute=config.get_config().ALGO_NEWS_1M_START_MINUTE,
-                                          end_hour=config.get_config().ALGO_NEWS_1M_END_HOUR,
-                                          end_minute=config.get_config().ALGO_NEWS_1M_END_MINUTE,
+                                          start_hour=M1_S_H,
+                                          start_minute=M1_S_M,
+                                          end_hour=M1_E_H,
+                                          end_minute=M1_E_M,
                                           duration='1 min',
                                           )
+
         second_bar_open = bars_5_min.iloc[0].Open
         second_bar_close= bars_1_min.iloc[-1].Close
         second_bar_high = second_bar_open
@@ -57,23 +62,15 @@ def algo_news():
         last_bar = utils.get_last_bar(fut_code)
         last_px = last_bar.Close
 
-        params = FwdLevelsAlgoParams()
+        buy_stps = config.get_config().ALGO_NEWS_BUY_STP
+        sell_stps = config.get_config().ALGO_NEWS_SELL_STP
 
-        params.BUY_ROOM = config.get_config().ALGO_NEWS_BUY_ROOM
-        params.BUY_FWD = config.get_config().ALGO_NEWS_BUY_FWD
-        params.BUY_MAIN_STEP = config.get_config().ALGO_NEWS_BUY_MAIN_STEP
-        params.MAIN_BUY_ADD_STOPS = config.get_config().ALGO_NEWS_MAIN_BUY_ADD_STOPS
-        params.BUY_ADD_FWD = config.get_config().ALGO_NEWS_BUY_ADD_FWD
-        params.BUY_ADD_MAIN_STEP = config.get_config().ALGO_NEWS_BUY_ADD_MAIN_STEP
-        params.SAFE_BUY_STOPS = config.get_config().ALGO_NEWS_SAFE_BUY_STOPS
-        params.BUY_SAFE_STEP = config.get_config().ALGO_NEWS_BUY_SAFE_STEP
-        params.SELL_ROOM = config.get_config().ALGO_NEWS_SELL_ROOM
-        params.SELL_FWD = config.get_config().ALGO_NEWS_SELL_FWD
-        params.SELL_MAIN_STEP = config.get_config().ALGO_NEWS_SELL_MAIN_STEP
-        params.MAIN_SELL_ADD_STOPS = config.get_config().ALGO_NEWS_MAIN_SELL_ADD_STOPS
-        params.SELL_ADD_FWD = config.get_config().ALGO_NEWS_SELL_ADD_FWD
-        params.SELL_ADD_MAIN_STEP = config.get_config().ALGO_NEWS_SELL_ADD_MAIN_STEP
-        params.SAFE_SELL_STOPS = config.get_config().ALGO_NEWS_SAFE_SELL_STOPS
-        params.SELL_SAFE_STEP = config.get_config().ALGO_NEWS_SELL_SAFE_STEP
+        # condition = False
+        # if condition:
+        #     config.get_config().ALGO_NEWS_BUY_STP = [
+        #         (5, 1, 45, 45),
+        #         (0, 2, 15, 15),
+        #         (0, 3, 65, 0)
+        #     ]
 
-        fwd_levels_algo(fut_code, high, low, DELTA_TIME, last_px, params)
+        main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_stps)

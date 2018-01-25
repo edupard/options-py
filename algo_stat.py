@@ -1,7 +1,7 @@
 import utils
 import config
 
-from fwd_levels_algo import fwd_levels_algo, FwdLevelsAlgoParams
+from main_levels_algo import main_levels_algo
 
 def algo_stat():
     # shift time
@@ -14,11 +14,13 @@ def algo_stat():
     fut_codes = utils.get_fut_codes(positions_df)
 
     for fut_code in fut_codes:
+        M5_S_H, M5_S_M, M5_E_H, M5_E_M = config.get_config().ALGO_STAT_5M_RANGE
+
         bars_5_min = utils.get_bars_range(fut_code,
-                                          start_hour=config.get_config().ALGO_STAT_5M_START_HOUR,
-                                          start_minute=config.get_config().ALGO_STAT_5M_START_MINUTE,
-                                          end_hour=config.get_config().ALGO_STAT_5M_END_HOUR,
-                                          end_minute=config.get_config().ALGO_STAT_5M_END_MINUTE,
+                                          start_hour=M5_S_H,
+                                          start_minute=M5_S_M,
+                                          end_hour=M5_E_H,
+                                          end_minute=M5_E_M,
                                           duration='5 mins',
                                           )
         bar_open = bars_5_min.iloc[0].Open
@@ -43,23 +45,7 @@ def algo_stat():
         last_bar = utils.get_last_bar(fut_code)
         last_px = last_bar.Close
 
-        params = FwdLevelsAlgoParams()
+        buy_stps = config.get_config().ALGO_STAT_BUY_STP
+        sell_stps = config.get_config().ALGO_STAT_SELL_STP
 
-        params.BUY_ROOM = config.get_config().ALGO_STAT_BUY_ROOM
-        params.BUY_FWD = config.get_config().ALGO_STAT_BUY_FWD
-        params.BUY_MAIN_STEP = config.get_config().ALGO_STAT_BUY_MAIN_STEP
-        params.MAIN_BUY_ADD_STOPS = config.get_config().ALGO_STAT_MAIN_BUY_ADD_STOPS
-        params.BUY_ADD_FWD = config.get_config().ALGO_STAT_BUY_ADD_FWD
-        params.BUY_ADD_MAIN_STEP = config.get_config().ALGO_STAT_BUY_ADD_MAIN_STEP
-        params.SAFE_BUY_STOPS = config.get_config().ALGO_STAT_SAFE_BUY_STOPS
-        params.BUY_SAFE_STEP = config.get_config().ALGO_STAT_BUY_SAFE_STEP
-        params.SELL_ROOM = config.get_config().ALGO_STAT_SELL_ROOM
-        params.SELL_FWD = config.get_config().ALGO_STAT_SELL_FWD
-        params.SELL_MAIN_STEP = config.get_config().ALGO_STAT_SELL_MAIN_STEP
-        params.MAIN_SELL_ADD_STOPS = config.get_config().ALGO_STAT_MAIN_SELL_ADD_STOPS
-        params.SELL_ADD_FWD = config.get_config().ALGO_STAT_SELL_ADD_FWD
-        params.SELL_ADD_MAIN_STEP = config.get_config().ALGO_STAT_SELL_ADD_MAIN_STEP
-        params.SAFE_SELL_STOPS = config.get_config().ALGO_STAT_SAFE_SELL_STOPS
-        params.SELL_SAFE_STEP = config.get_config().ALGO_STAT_SELL_SAFE_STEP
-
-        fwd_levels_algo(fut_code, high, low, DELTA_TIME, last_px, params)
+        main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_stps)

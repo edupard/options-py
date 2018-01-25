@@ -25,11 +25,52 @@ class Config(object):
         self.PROFILE_STEPS = 10
         self.STRIKE_STEP = 0.25
 
-        # basic
+        # BASIC ---------------------------------------------------------------------------------------------
         self.STOPS_NUM_BASIC = 3
         self.STOP_PX_STEP_BASIC = 60 / self.FUT_PRICE_COEFF
 
-        # night_stops
+        # ZERO ---------------------------------------------------------------------------------------------
+        # (working from zero_delta level or nearest strike)
+
+        #self.ALGO_ZERO_BUY_START = [65]
+        #self.ALGO_ZERO_BUY_STP_1 = [3, 65, 0]
+        #self.ALGO_ZERO_BUY_STP_2 = [0, 0, 0]
+        #self.ALGO_ZERO_BUY_STP_3 = [0, 0, 0]
+
+        # self.ALGO_ZERO_SELL_START = [65]
+        # self.ALGO_ZERO_SELL_STP_1 = [3, 65, 0]
+        # self.ALGO_ZERO_SELL_STP_2 = [0, 0, 0]
+        # self.ALGO_ZERO_SELL_STP_3 = [0, 0, 0]
+
+        # SAFE ---------------------------------------------------------------------------------------------
+        # (working from last_bar close level)
+
+        # self.ALGO_SAFE_BUY_START = [65]
+        # self.ALGO_SAFE_BUY_STP_1 = [3, 65, 0]
+        # self.ALGO_SAFE_BUY_STP_2 = [0, 0, 0]
+        # self.ALGO_SAFE_BUY_STP_3 = [0, 0, 0]
+
+        # self.ALGO_SAFE_SELL_START = [65]
+        # self.ALGO_SAFE_SELL_STP_1 = [3, 65, 0]
+        # self.ALGO_SAFE_SELL_STP_2 = [0, 0, 0]
+        # self.ALGO_SAFE_SELL_STP_3 = [0, 0, 0]
+
+        # NIGHT ----------------------------------------------------------------------------------------
+
+        # [NIGHT_BAR_START_HOUR]
+        # self.NIGHT_4H = [23]
+
+        # [HEDGING_PARAMS]
+        # self.ALGO_NIGHT_BUY_START = [65]
+        # self.ALGO_NIGHT_BUY_STP_1 = [1, 15, 15]
+        # self.ALGO_NIGHT_BUY_STP_2 = [0, 15, 15]
+        # self.ALGO_NIGHT_BUY_STP_3 = [3, 65, 0]
+
+        # self.ALGO_NIGHT_SELL_START = [30]
+        # self.ALGO_NIGHT_SELL_STP_1 = [1, 15, 0]
+        # self.ALGO_NIGHT_SELL_STP_2 = [0, 15, 15]
+        # self.ALGO_NIGHT_SELL_STP_3 = [1, 65, 0]
+
         self.NIGTH_BAR_START_HOUR = 23
 
         self.STOPS_NUM_NIGHT_BUY = 1
@@ -47,108 +88,65 @@ class Config(object):
         self.STOP_PX_STEP_NIGHT_FWD_BUY = 10 / self.FUT_PRICE_COEFF
         self.STOP_PX_STEP_NIGHT_FWD_SELL = 10 / self.FUT_PRICE_COEFF
 
-        # 07_00
-        self.ALGO_07_00_FIRST_BAR_START_HOUR = 2
-        self.ALGO_07_00_SECOND_BAR_START_HOUR = 3
+        # 07_00 -------------------------------------------------------------------------
 
-        # buy
-        # first
-        self.ALGO_07_00_BUY_ROOM = 10 / self.FUT_PRICE_COEFF
-        self.ALGO_07_00_BUY_FWD = 50 / self.FUT_PRICE_COEFF
-        self.ALGO_07_00_BUY_MAIN_STEP = 50 / self.FUT_PRICE_COEFF # or 15 (step to find first non-zero delta)
-        # additional
-        self.ALGO_07_00_MAIN_BUY_ADD_STOPS = 2
-        self.ALGO_07_00_BUY_ADD_FWD = 15 / self.FUT_PRICE_COEFF
-        self.ALGO_07_00_BUY_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF # grid step !!!
-        # safe
-        self.ALGO_07_00_SAFE_BUY_STOPS = 3
-        self.ALGO_07_00_BUY_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        # 02:00 - 03:00
+        self.ALGO_07_00_4H_FIRST_BAR = (2, 0)
+        # 03:00 - 07:00
+        self.ALGO_07_00_4H_SECOND_BAR = (3, 0)
 
-        # sell
-        # first
-        self.ALGO_07_00_SELL_ROOM = 10 / self.FUT_PRICE_COEFF
-        self.ALGO_07_00_SELL_FWD = 50 / self.FUT_PRICE_COEFF
-        self.ALGO_07_00_SELL_MAIN_STEP = 50 / self.FUT_PRICE_COEFF # or 15 (step to find first non-zero delta)
-        # additional
-        self.ALGO_07_00_MAIN_SELL_ADD_STOPS = 2
-        self.ALGO_07_00_SELL_ADD_FWD = 15 / self.FUT_PRICE_COEFF
-        self.ALGO_07_00_SELL_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF # grid step !!!
-        # safe
-        self.ALGO_07_00_SAFE_SELL_STOPS = 1
-        self.ALGO_07_00_SELL_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
+        self.ALGO_07_00_BUY_STP = [
+            (0, 0, 0, 0),
+            (10, 3, 15, 15),
+            (0, 3, 65, 0)
+        ]
 
-        # NEWS
-        # 4 h
-        self.ALGO_NEWS_4H_START_HOUR = 11
-        # 5 m
-        self.ALGO_NEWS_5M_START_HOUR = 15
-        self.ALGO_NEWS_5M_START_MINUTE = 0
-        self.ALGO_NEWS_5M_END_HOUR = 16
-        self.ALGO_NEWS_5M_END_MINUTE = 20
-        # 1 m
-        self.ALGO_NEWS_1M_START_HOUR = 16
-        self.ALGO_NEWS_1M_START_MINUTE = 25
-        self.ALGO_NEWS_1M_END_HOUR = 16
-        self.ALGO_NEWS_1M_END_MINUTE = 28
+        self.ALGO_07_00_SELL_STP = [
+            (0, 0, 0, 0),
+            (10, 3, 15, 15),
+            (0, 1, 65, 0)
+        ]
 
-        # buy
-        # first
-        self.ALGO_NEWS_BUY_ROOM = 10 / self.FUT_PRICE_COEFF
-        self.ALGO_NEWS_BUY_FWD = 50 / self.FUT_PRICE_COEFF
-        self.ALGO_NEWS_BUY_MAIN_STEP = 50 / self.FUT_PRICE_COEFF  # or 15 (step to find first non-zero delta)
-        # additional
-        self.ALGO_NEWS_MAIN_BUY_ADD_STOPS = 2
-        self.ALGO_NEWS_BUY_ADD_FWD = 15 / self.FUT_PRICE_COEFF
-        self.ALGO_NEWS_BUY_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF  # grid step !!!
-        # safe
-        self.ALGO_NEWS_SAFE_BUY_STOPS = 3
-        self.ALGO_NEWS_BUY_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        # NEWS ------------------------------------------------------------------------------------------------------------------------------
 
-        # sell
-        # first
-        self.ALGO_NEWS_SELL_ROOM = 10 / self.FUT_PRICE_COEFF
-        self.ALGO_NEWS_SELL_FWD = 50 / self.FUT_PRICE_COEFF
-        self.ALGO_NEWS_SELL_MAIN_STEP = 50 / self.FUT_PRICE_COEFF  # or 15 (step to find first non-zero delta)
-        # additional
-        self.ALGO_NEWS_MAIN_SELL_ADD_STOPS = 2
-        self.ALGO_NEWS_SELL_ADD_FWD = 15 / self.FUT_PRICE_COEFF
-        self.ALGO_NEWS_SELL_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF  # grid step !!!
-        # safe
-        self.ALGO_NEWS_SAFE_SELL_STOPS = 1
-        self.ALGO_NEWS_SELL_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        # 11:00 - 15:00
+        self.ALGO_NEWS_4H_BAR = (11, 0)
+        # 15:00 - 16:25
+        self.ALGO_NEWS_5M_RANGE = (15, 0, 16, 20)
+        # 16:25 - 16:29
+        self.ALGO_NEWS_1M_RANGE = (16, 25, 16, 28)
+
+        # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
+        self.ALGO_NEWS_BUY_STP = [
+            (5, 1, 45, 45),
+            (0, 2, 15, 15),
+            (0, 3, 65, 0)
+        ]
+
+        self.ALGO_NEWS_SELL_STP = [
+            (5, 1, 45, 45),
+            (0, 2, 15, 15),
+            (0, 1, 65, 0)
+        ]
         
-        # STAT
-        # 5 m
-        self.ALGO_STAT_5M_START_HOUR = 15
-        self.ALGO_STAT_5M_START_MINUTE = 0
-        self.ALGO_STAT_5M_END_HOUR = 16
-        self.ALGO_STAT_5M_END_MINUTE = 25
+        # STAT --------------------------------------------------------------------------------------------------------
 
-        # buy
-        # first
-        self.ALGO_STAT_BUY_ROOM = 10 / self.FUT_PRICE_COEFF
-        self.ALGO_STAT_BUY_FWD = 50 / self.FUT_PRICE_COEFF
-        self.ALGO_STAT_BUY_MAIN_STEP = 50 / self.FUT_PRICE_COEFF  # or 15 (step to find first non-zero delta)
-        # additional
-        self.ALGO_STAT_MAIN_BUY_ADD_STOPS = 2
-        self.ALGO_STAT_BUY_ADD_FWD = 15 / self.FUT_PRICE_COEFF
-        self.ALGO_STAT_BUY_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF  # grid step !!!
-        # safe
-        self.ALGO_STAT_SAFE_BUY_STOPS = 3
-        self.ALGO_STAT_BUY_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        # 5 m 15:00 - 17:00
+        self.ALGO_STAT_5M_RANGE = (15 , 0,  16, 55)
 
-        # sell
-        # first
-        self.ALGO_STAT_SELL_ROOM = 10 / self.FUT_PRICE_COEFF
-        self.ALGO_STAT_SELL_FWD = 50 / self.FUT_PRICE_COEFF
-        self.ALGO_STAT_SELL_MAIN_STEP = 50 / self.FUT_PRICE_COEFF  # or 15 (step to find first non-zero delta)
-        # additional
-        self.ALGO_STAT_MAIN_SELL_ADD_STOPS = 2
-        self.ALGO_STAT_SELL_ADD_FWD = 15 / self.FUT_PRICE_COEFF
-        self.ALGO_STAT_SELL_ADD_MAIN_STEP = 15 / self.FUT_PRICE_COEFF  # grid step !!!
-        # safe
-        self.ALGO_STAT_SAFE_SELL_STOPS = 1
-        self.ALGO_STAT_SELL_SAFE_STEP = 65 / self.FUT_PRICE_COEFF
+        # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
+        self.ALGO_STAT_BUY_STP = [
+            (0, 0, 0, 0),
+            (0, 3, 15, 15),
+            (0, 3, 65, 0)
+        ]
+
+        self.ALGO_STAT_SELL_STP = [
+            (0, 0, 0, 0),
+            (5, 3, 15, 15),
+            (0, 1, 65, 0)
+        ]
         
         
         
