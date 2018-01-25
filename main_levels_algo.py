@@ -9,7 +9,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
 
     current_px = high
     for p in buy_stps:
-        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX = p
+        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE = p
 
         if NUM == 0:
             continue
@@ -19,9 +19,8 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
         GRID_STEP_PX = GRID_STEP_PX / config.get_config().FUT_PRICE_COEFF
         FWD_PX = FWD_PX / config.get_config().FUT_PRICE_COEFF
 
-        SHIFT_PRICE = True if SHIFT_PX == 0 else False
         current_px += SHIFT_PX
-        if SHIFT_PRICE:
+        if IS_SAFE:
             current_px += GRID_STEP_PX
 
         stops_submitted = 0
@@ -29,12 +28,19 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
             delta_px = current_px + FWD_PX
             stop_px = current_px
             delta = utils.get_portfolio_delta(fut_code, delta_px, utils.default_time_shift_strategy, DELTA_TIME)
-            if round(delta) < 0:
-                buy_orders_px.append(stop_px)
-                buy_orders_delta.append(delta)
-                stops_submitted += 1
-                if stops_submitted >= NUM:
-                    break
+
+            buy_orders_px.append(stop_px)
+            buy_orders_delta.append(delta)
+            stops_submitted += 1
+            if stops_submitted >= NUM:
+                break
+
+            # if round(delta) < 0:
+            #     buy_orders_px.append(stop_px)
+            #     buy_orders_delta.append(delta)
+            #     stops_submitted += 1
+            #     if stops_submitted >= NUM:
+            #         break
             current_px += GRID_STEP_PX
         current_px += FWD_PX
 
@@ -44,7 +50,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
 
     current_px = low
     for p in sell_stps:
-        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX = p
+        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE = p
         if NUM == 0:
             continue
 
@@ -53,9 +59,8 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
         GRID_STEP_PX = GRID_STEP_PX / config.get_config().FUT_PRICE_COEFF
         FWD_PX = FWD_PX / config.get_config().FUT_PRICE_COEFF
 
-        SHIFT_PRICE = True if SHIFT_PX == 0 else False
         current_px -= SHIFT_PX
-        if SHIFT_PRICE:
+        if IS_SAFE:
             current_px -= GRID_STEP_PX
 
         stops_submitted = 0
@@ -63,12 +68,21 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
             delta_px = current_px - FWD_PX
             stop_px = current_px
             delta = utils.get_portfolio_delta(fut_code, delta_px, utils.default_time_shift_strategy, DELTA_TIME)
-            if round(delta) > 0:
-                sell_orders_px.append(stop_px)
-                sell_orders_delta.append(delta)
-                stops_submitted += 1
-                if stops_submitted >= NUM:
-                    break
+
+            sell_orders_px.append(stop_px)
+            sell_orders_delta.append(delta)
+            stops_submitted += 1
+            if stops_submitted >= NUM:
+                break
+
+
+
+            # if round(delta) > 0:
+            #     sell_orders_px.append(stop_px)
+            #     sell_orders_delta.append(delta)
+            #     stops_submitted += 1
+            #     if stops_submitted >= NUM:
+            #         break
             current_px -= GRID_STEP_PX
         current_px -= FWD_PX
 

@@ -5,7 +5,8 @@ from main_levels_algo import main_levels_algo
 
 def algo_news():
     # shift time
-    DELTA_TIME = config.get_config().RUN_TIME.replace(hour=15, minute=0, second=0, microsecond=0)
+    DELTA_H, DELTA_M = config.get_config().ALGO_NEWS_DELTA_TIME
+    DELTA_TIME = config.get_config().RUN_TIME.replace(hour=DELTA_H, minute=DELTA_M, second=0, microsecond=0)
 
     # find all futures
     positions_df = config.get_config().positions_df
@@ -35,7 +36,10 @@ def algo_news():
                                           )
 
         second_bar_open = bars_5_min.iloc[0].Open
-        second_bar_close= bars_1_min.iloc[-1].Close
+        if bars_1_min.shape[0] == 0:
+            second_bar_close = bars_5_min.iloc[-1].Close
+        else:
+            second_bar_close= bars_1_min.iloc[-1].Close
         second_bar_high = second_bar_open
         second_bar_low = second_bar_open
         for _, bar in bars_5_min.iterrows():
@@ -44,9 +48,9 @@ def algo_news():
             second_bar_high = max(second_bar_high, bar.High)
 
         for _, bar in bars_5_min.iterrows():
-            second_bar_low = max(second_bar_low, bar.Low)
+            second_bar_low = min(second_bar_low, bar.Low)
         for _, bar in bars_1_min.iterrows():
-            second_bar_low = max(second_bar_low, bar.Low)
+            second_bar_low = min(second_bar_low, bar.Low)
 
 
         if bar_4h.Close > bar_4h.Open:

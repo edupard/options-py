@@ -5,7 +5,8 @@ from main_levels_algo import main_levels_algo
 
 def algo_07_00():
     # shift time
-    DELTA_TIME = config.get_config().RUN_TIME.replace(hour=7, minute=0, second=0, microsecond=0)
+    DELTA_H, DELTA_M = config.get_config().ALGO_07_00_DELTA_TIME
+    DELTA_TIME = config.get_config().RUN_TIME.replace(hour=DELTA_H, minute=DELTA_M, second=0, microsecond=0)
 
     # find all futures
     positions_df = config.get_config().positions_df

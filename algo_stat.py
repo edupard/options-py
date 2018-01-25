@@ -5,7 +5,8 @@ from main_levels_algo import main_levels_algo
 
 def algo_stat():
     # shift time
-    DELTA_TIME = config.get_config().RUN_TIME.replace(hour=15, minute=0, second=0, microsecond=0)
+    DELTA_H, DELTA_M = config.get_config().ALGO_STAT_DELTA_TIME
+    DELTA_TIME = config.get_config().RUN_TIME.replace(hour=DELTA_H, minute=DELTA_M, second=0, microsecond=0)
 
     # find all futures
     positions_df = config.get_config().positions_df
@@ -30,7 +31,7 @@ def algo_stat():
         for _, bar in bars_5_min.iterrows():
             bar_high = max(bar_high, bar.High)
         for _, bar in bars_5_min.iterrows():
-            bar_low = max(bar_low, bar.Low)
+            bar_low = min(bar_low, bar.Low)
 
         if bar_close > bar_open:
             high = bar_high
