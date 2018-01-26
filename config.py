@@ -25,18 +25,38 @@ class Config(object):
         self.PROFILE_STEPS = 10
         self.STRIKE_STEP = 0.25
 
+
+        # if stops are SAFE then SHIFT_PX MUST BE EQUAL 0
+
         # BASIC ---------------------------------------------------------------------------------------------
         self.STOPS_NUM_BASIC = 3
         self.STOP_PX_STEP_BASIC = 60 / self.FUT_PRICE_COEFF
 
-        # ZERO ---------------------------------------------------------------------------------------------
+        # CLOSE_DELTA_COND ---------------------------------------------------------------------------------------------
+        self.ALGO_CLOSE_DELTA_15_00_DELTA_TIME = (15, 0)
+
+        self.ALGO_CLOSE_DELTA_15_00_4H_BAR = (11, 0)
+
+        # SAFE (Analog of basic from last_px) -------------------------------------------------------------------------------------------
+
+        # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
+        self.ALGO_SAFE_BUY_STP = [
+            (0, 0, 0, 0, False),
+            (0, 0, 0, 0, False),
+            (0, 3, 65, 0, True)
+        ]
+
+        self.ALGO_SAFE_SELL_STP = [
+            (0, 0, 0, 0, False),
+            (0, 0, 0, 0, False),
+            (0, 1, 65, 0, True)
+        ]
 
         # NIGHT ----------------------------------------------------------------------------------------
 
         self.ALGO_NIGHT_DELTA_TIME = (1, 0)
 
         self.ALGO_NIGHT_4H_BAR = (23, 0)
-
 
         self.ALGO_NIGHT_UPTREND_BUY_STP = [
             (0, 0, 0, 0, False),
@@ -107,13 +127,13 @@ class Config(object):
             (0, 2, 15, 15, False),
             (0, 1, 65, 0, True)
         ]
-        
+
         # STAT --------------------------------------------------------------------------------------------------------
 
         self.ALGO_STAT_DELTA_TIME = (15, 0)
 
         # 5 m 15:00 - 17:00
-        self.ALGO_STAT_5M_RANGE = (15 , 0,  16, 55)
+        self.ALGO_STAT_5M_RANGE = (15, 0, 16, 55)
 
         # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
         self.ALGO_STAT_BUY_STP = [
@@ -159,7 +179,6 @@ class Config(object):
         # 07:00 - 11:00
         self.ALGO_11_00_4H_THIRD_BAR = (7, 0)
 
-
         self.ALGO_11_00_DAY_SL = 35
 
         # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
@@ -174,9 +193,7 @@ class Config(object):
             (10, 3, 15, 15, False),
             (0, 1, 65, 0, True)
         ]
-        
-        
-        
+
 
 _config = Config()
 
