@@ -8,13 +8,11 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
     buy_orders_delta = []
 
     current_px = high
-    large_stop = True
     prev_delta = 0
     for p in buy_stps:
-        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE = p
+        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE, IS_SEARCH = p
 
         if NUM == 0:
-            large_stop = False
             continue
 
         #convert to real pxs
@@ -27,7 +25,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
             current_px += GRID_STEP_PX
 
         stops_submitted = 0
-        for _ in range(NUM if large_stop else 100):
+        for _ in range(100 if IS_SEARCH else NUM):
             delta_px = current_px + FWD_PX
             stop_px = current_px
             delta = utils.get_portfolio_delta(fut_code, delta_px, utils.default_time_shift_strategy, DELTA_TIME)
@@ -39,7 +37,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
                 buy_orders_delta.append(delta)
                 stops_submitted += 1
             else:
-                if large_stop:
+                if not IS_SEARCH:
                     stops_submitted += 1
 
             prev_delta = delta
@@ -48,19 +46,16 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
                 break
             current_px += GRID_STEP_PX
         current_px += FWD_PX
-        large_stop = False
 
     # sell order
     sell_orders_px = []
     sell_orders_delta = []
 
     current_px = low
-    large_stop = True
     prev_delta = 0
     for p in sell_stps:
-        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE = p
+        SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE, IS_SEARCH = p
         if NUM == 0:
-            large_stop = False
             continue
 
         # convert to real pxs
@@ -73,7 +68,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
             current_px -= GRID_STEP_PX
 
         stops_submitted = 0
-        for _ in range(NUM if large_stop else 100):
+        for _ in range(100 if IS_SEARCH else NUM):
             delta_px = current_px - FWD_PX
             stop_px = current_px
             delta = utils.get_portfolio_delta(fut_code, delta_px, utils.default_time_shift_strategy, DELTA_TIME)
@@ -85,14 +80,13 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
                 sell_orders_delta.append(delta)
                 stops_submitted += 1
             else:
-                if large_stop:
+                if not IS_SEARCH:
                     stops_submitted += 1
             prev_delta = delta
             if stops_submitted >= NUM:
                 break
             current_px -= GRID_STEP_PX
         current_px -= FWD_PX
-        large_stop = False
 
     buy_orders_px_np = np.array(buy_orders_px)
     buy_orders_px_delta_np = np.array(buy_orders_delta)
