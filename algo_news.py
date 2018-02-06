@@ -3,6 +3,7 @@ import config
 
 from main_levels_algo import main_levels_algo
 
+
 def algo_news():
     # shift time
     DELTA_H, DELTA_M = config.get_config().ALGO_NEWS_DELTA_TIME
@@ -18,7 +19,7 @@ def algo_news():
         BAR_4H_S_H, BAR_4H_S_M = config.get_config().ALGO_NEWS_4H_BAR
         bar_4h = utils.get_specific_bar(fut_code, hour=BAR_4H_S_H, minute=BAR_4H_S_M)
 
-        M5_S_H, M5_S_M, M5_E_H, M5_E_M =  config.get_config().ALGO_NEWS_5M_RANGE
+        M5_S_H, M5_S_M, M5_E_H, M5_E_M = config.get_config().ALGO_NEWS_5M_RANGE
         bars_5_min = utils.get_bars_range(fut_code,
                                           start_hour=M5_S_H,
                                           start_minute=M5_S_M,
@@ -39,7 +40,7 @@ def algo_news():
         if bars_1_min.shape[0] == 0:
             second_bar_close = bars_5_min.iloc[-1].Close
         else:
-            second_bar_close= bars_1_min.iloc[-1].Close
+            second_bar_close = bars_1_min.iloc[-1].Close
         second_bar_high = second_bar_open
         second_bar_low = second_bar_open
         for _, bar in bars_5_min.iterrows():
@@ -52,6 +53,9 @@ def algo_news():
         for _, bar in bars_1_min.iterrows():
             second_bar_low = min(second_bar_low, bar.Low)
 
+        hl_dist = (bar_4h.High - bar_4h.Low) / 2
+        h_px = bar_4h.Close + hl_dist
+        l_px = bar_4h.Close - hl_dist
 
         if bar_4h.Close > bar_4h.Open:
             high = max(bar_4h.High, second_bar_high)
@@ -62,6 +66,9 @@ def algo_news():
         else:
             high = max(bar_4h.High, second_bar_high)
             low = min(bar_4h.Low, second_bar_low)
+
+        high = min(high, h_px)
+        low = max(low, l_px)
 
         last_bar = utils.get_last_bar(fut_code)
         last_px = last_bar.Close
