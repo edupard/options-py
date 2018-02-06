@@ -9,6 +9,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
 
     current_px = high
     large_stop = True
+    prev_delta = 0
     for p in buy_stps:
         SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE = p
 
@@ -31,13 +32,18 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
             stop_px = current_px
             delta = utils.get_portfolio_delta(fut_code, delta_px, utils.default_time_shift_strategy, DELTA_TIME)
 
-            if round(delta) < 0:
+            order_delta = round(delta)
+            prev_order_delta = round(prev_delta)
+            if order_delta < 0 and order_delta != prev_order_delta:
                 buy_orders_px.append(stop_px)
                 buy_orders_delta.append(delta)
                 stops_submitted += 1
             else:
                 if large_stop:
                     stops_submitted += 1
+
+            prev_delta = delta
+
             if stops_submitted >= NUM:
                 break
             current_px += GRID_STEP_PX
@@ -50,6 +56,7 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
 
     current_px = low
     large_stop = True
+    prev_delta = 0
     for p in sell_stps:
         SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE = p
         if NUM == 0:
@@ -71,13 +78,16 @@ def main_levels_algo(fut_code, high, low, DELTA_TIME, last_px, buy_stps, sell_st
             stop_px = current_px
             delta = utils.get_portfolio_delta(fut_code, delta_px, utils.default_time_shift_strategy, DELTA_TIME)
 
-            if round(delta) > 0:
+            order_delta = round(delta)
+            prev_order_delta = round(prev_delta)
+            if order_delta > 0 and order_delta != prev_order_delta:
                 sell_orders_px.append(stop_px)
                 sell_orders_delta.append(delta)
                 stops_submitted += 1
             else:
                 if large_stop:
                     stops_submitted += 1
+            prev_delta = delta
             if stops_submitted >= NUM:
                 break
             current_px -= GRID_STEP_PX
