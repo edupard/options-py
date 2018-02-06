@@ -4,8 +4,8 @@ import config
 import datetime
 
 
-def algo_close_delta_15_00():
-    DELTA_H, DELTA_M = config.get_config().ALGO_CLOSE_DELTA_15_00_DELTA_TIME
+def algo_close_delta_19_00():
+    DELTA_H, DELTA_M = config.get_config().ALGO_CLOSE_DELTA_19_00_DELTA_TIME
     DELTA_TIME = config.get_config().RUN_TIME.replace(hour=DELTA_H, minute=DELTA_M, second=0, microsecond=0)
 
     # find all futures
@@ -18,7 +18,7 @@ def algo_close_delta_15_00():
         # get undelying px
         last_bar = utils.get_last_bar(fut_code)
 
-        BAR_4H_S_H, BAR_4H_S_M = config.get_config().ALGO_CLOSE_DELTA_15_00_4H_BAR
+        BAR_4H_S_H, BAR_4H_S_M = config.get_config().ALGO_CLOSE_DELTA_19_00_4H_BAR
         bar = utils.get_specific_bar(fut_code, hour=BAR_4H_S_H, minute=BAR_4H_S_M)
 
         delta_px = bar.Close

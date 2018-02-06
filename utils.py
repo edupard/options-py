@@ -249,7 +249,22 @@ def add_stop_orders(fut_code, px_grid, delta_grid, order_type='STP'):
         # create target order
         config.get_config().target_code.append(fut_code)
         config.get_config().target_qty.append(order_delta)
-        config.get_config().target_px.append(px_grid[i])
+
+        px = px_grid[i]
+        pxWhole = math.floor(px)
+        pxPart = px - pxWhole
+        pxPartView = pxPart * config.get_config().FUT_PRICE_COEFF
+        if pxPartView % config.get_config().VIEW_PRICE_STEP != 0:
+            is_buy = False
+            if order_delta > 0:
+                is_buy = True
+            if is_buy:
+                pxPartView = (pxPartView // config.get_config().VIEW_PRICE_STEP) * config.get_config().VIEW_PRICE_STEP
+            else:
+                pxPartView = (pxPartView // config.get_config().VIEW_PRICE_STEP  + 1) * config.get_config().VIEW_PRICE_STEP
+            px = pxWhole + pxPartView / config.get_config().FUT_PRICE_COEFF
+
+        config.get_config().target_px.append(px)
         config.get_config().target_order_type.append(order_type)
 
 

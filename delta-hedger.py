@@ -5,8 +5,10 @@ import utils
 import config
 
 from basic_algo import basic_algo
+from algo_basic_fix_19_00 import algo_basic_fix_19_00
 from algo_close_delta import algo_close_delta
 from algo_close_delta_15_00 import algo_close_delta_15_00
+from algo_close_delta_19_00 import algo_close_delta_19_00
 from algo_night import algo_night
 from algo_07_00 import algo_07_00
 from algo_news import algo_news
@@ -14,6 +16,7 @@ from algo_stat import algo_stat
 from algo_19_00 import algo_19_00
 from algo_11_00 import algo_11_00
 from algo_safe import algo_safe
+
 
 utils.parse_input()
 
@@ -24,6 +27,8 @@ elif config.get_config().SCRIPT_PARAMS == "CLOSE_DELTA":
     algo_close_delta()
 elif config.get_config().SCRIPT_PARAMS == "CLOSE_DELTA_15_00":
     algo_close_delta_15_00()
+elif config.get_config().SCRIPT_PARAMS == "CLOSE_DELTA_19_00":
+    algo_close_delta_19_00()
 elif config.get_config().SCRIPT_PARAMS == "NIGHT":
     algo_night()
 elif config.get_config().SCRIPT_PARAMS == "07_00":
@@ -36,6 +41,8 @@ elif config.get_config().SCRIPT_PARAMS == "STAT":
     algo_stat()
 elif config.get_config().SCRIPT_PARAMS == "19_00":
     algo_19_00()
+elif config.get_config().SCRIPT_PARAMS == "BASIC_FIX_19_00":
+    algo_basic_fix_19_00()
 elif config.get_config().SCRIPT_PARAMS == "EMPTY":
     _todo = 0
 elif config.get_config().SCRIPT_PARAMS == "SAFE":

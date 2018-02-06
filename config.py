@@ -20,7 +20,8 @@ class Config(object):
         self.OPT_MULT = 1000
         self.YEAR_DAYS_COUNT = 360
         self.FUT_PRICE_COEFF = 320
-        self.PRICE_STEP = 5 / self.FUT_PRICE_COEFF
+        self.VIEW_PRICE_STEP = 5
+        self.PRICE_STEP = self.VIEW_PRICE_STEP / self.FUT_PRICE_COEFF
         self.GRID_PX_STEP = 0.07
         self.PROFILE_STEPS = 10
         self.STRIKE_STEP = 0.25
@@ -30,12 +31,23 @@ class Config(object):
         # 1) If stops are SAFE then SHIFT_PX is not applicable (MUST BE EQUAL 0 !!!)
 
         # BASIC ------------------------------------------------------------------------------------------------------
-        self.STOPS_NUM_BASIC = 3
+        self.STOPS_NUM_BASIC = 5
         self.STOP_PX_STEP_BASIC = 65 / self.FUT_PRICE_COEFF
 
-        # CLOSE_DELTA_15_00 ------------------------------------------------------------------------------------------
+        # BASIC_FIX_19_00 --------------------------------------------------------------------------------------------
+        self.STOPS_NUM_BASIC_FIX_19_00 = 5
+        self.STOP_PX_STEP_BASIC_FIX_19_00 = 65 / self.FUT_PRICE_COEFF
+
+        self.ALGO_BASIC_FIX_19_00_DELTA_TIME = (19, 0)
+        self.ALGO_BASIC_FIX_19_00_4H_BAR = (15, 0)
+
+        # CLOSE_DELTA_15_00 -----------------------------------------------------------------------------------------
         self.ALGO_CLOSE_DELTA_15_00_DELTA_TIME = (15, 0)
         self.ALGO_CLOSE_DELTA_15_00_4H_BAR = (11, 0)
+
+        # CLOSE_DELTA_19_00 ------------------------------------------------------------------------------------------
+        self.ALGO_CLOSE_DELTA_19_00_DELTA_TIME = (19, 0)
+        self.ALGO_CLOSE_DELTA_19_00_4H_BAR = (15, 0)
 
         # SAFE -------------------------------------------------------------------------------------------------------
         # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
@@ -47,7 +59,7 @@ class Config(object):
         self.ALGO_SAFE_SELL_STP = [
             (0, 0, 0, 0, False),
             (0, 0, 0, 0, False),
-            (0, 1, 65, 0, True)
+            (0, 3, 65, 0, True)
         ]
 
         # NIGHT ------------------------------------------------------------------------------------------------------
@@ -55,23 +67,23 @@ class Config(object):
         self.ALGO_NIGHT_4H_BAR = (23, 0)
         self.ALGO_NIGHT_UPTREND_BUY_STP = [
             (0, 0, 0, 0, False),
-            (0, 1, 30, 0, True),
-            (0, 2, 65, 0, True)
+            (0, 2, 35, 0, True),
+            (0, 3, 45, 0, True)
         ]
         self.ALGO_NIGHT_UPTREND_SELL_STP = [
             (0, 0, 0, 0, False),
-            (0, 0, 0, 0, False),
-            (0, 1, 65, 0, True)
+            (0, 0, 0, 0, True),
+            (0, 3, 65, 0, True)
         ]
         self.ALGO_NIGHT_DOWNTREND_BUY_STP = [
             (0, 0, 0, 0, False),
-            (0, 0, 0, 0, False),
+            (0, 0, 0, 0, True),
             (0, 3, 65, 0, True)
         ]
         self.ALGO_NIGHT_DOWNTREND_SELL_STP = [
             (0, 0, 0, 0, False),
-            (0, 1, 30, 0, True),
-            (0, 1, 65, 0, True)
+            (0, 2, 35, 0, True),
+            (0, 3, 45, 0, True)
         ]
 
         # 07_00 ------------------------------------------------------------------------------------------------------
@@ -85,12 +97,12 @@ class Config(object):
         # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
         self.ALGO_07_00_BUY_STP = [
             (0, 0, 0, 0, False),
-            (10, 3, 15, 15, False),
-            (0, 3, 65, 0, True)
+            (10, 5, 15, 15, False),
+            (0, 2, 65, 0, True)
         ]
         self.ALGO_07_00_SELL_STP = [
             (0, 0, 0, 0, False),
-            (10, 3, 15, 15, False),
+            (10, 5, 15, 15, False),
             (0, 1, 65, 0, True)
         ]
 
@@ -110,13 +122,13 @@ class Config(object):
         # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
         self.ALGO_11_00_BUY_STP = [
             (0, 0, 0, 0, False),
-            (10, 3, 15, 15, False),
+            (0, 5, 10, 10, False),
             (0, 3, 65, 0, True)
         ]
         self.ALGO_11_00_SELL_STP = [
             (0, 0, 0, 0, False),
-            (10, 3, 15, 15, False),
-            (0, 1, 65, 0, True)
+            (0, 5, 10, 10, False),
+            (0, 3, 65, 0, True)
         ]
 
         # NEWS -------------------------------------------------------------------------------------------------------
@@ -129,16 +141,16 @@ class Config(object):
         # 16:25 - 16:29
         self.ALGO_NEWS_1M_RANGE = (16, 25, 16, 28)
 
-        # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE]
+        # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX, IS_SAFE, IS_SEARCH]
         self.ALGO_NEWS_BUY_STP = [
-            (5, 1, 45, 45, False),
-            (0, 2, 15, 15, False),
+            (0, 1, 45, 45, False),
+            (0, 5, 10, 10, False),
             (0, 3, 65, 0, True)
         ]
         self.ALGO_NEWS_SELL_STP = [
-            (5, 1, 45, 45, False),
-            (0, 2, 15, 15, False),
-            (0, 1, 65, 0, True)
+            (0, 1, 45, 45, False),
+            (0, 5, 10, 10, False),
+            (0, 3, 65, 0, True)
         ]
 
         # STAT -------------------------------------------------------------------------------------------------------
@@ -168,14 +180,15 @@ class Config(object):
         # [SHIFT_PX, NUM, GRID_STEP_PX, FWD_PX]
         self.ALGO_19_00_BUY_STP = [
             (0, 0, 0, 0, False),
-            (10, 3, 15, 15, False),
+            (10, 5, 15, 15, False),
             (0, 3, 65, 0, True)
         ]
         self.ALGO_19_00_SELL_STP = [
             (0, 0, 0, 0, False),
-            (10, 3, 15, 15, False),
-            (0, 1, 65, 0, True)
+            (10, 5, 15, 15, False),
+            (0, 2, 65, 0, True)
         ]
+
 
 _config = Config()
 
